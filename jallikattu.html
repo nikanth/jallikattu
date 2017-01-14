@@ -28,45 +28,38 @@ body {
 
 <body>
 <div id="content">
-    <h1>Accelerometer Javascript Test</h1>
+    <h1>Jallikattu</h1>
     <div id="sphere"></div>
     <div id="bull"></div>
-<ul>
-  <li>acceleration x: <span id="accelerationX"></span>g</li>
-  <li>acceleration y: <span id="accelerationY"></span>g</li>
-  <li>acceleration z: <span id="accelerationZ"></span>g</li>
-  <li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
-  <li>rotation beta: <span id="rotationBeta"></span>degree</li>
-  <li>rotation gamma: <span id="rotationGamma"></span>degree</li>
-</ul>
-
-test: <span id="test"></span>
 </div>
 <script type="text/javascript">
+
+var length = document.documentElement.clientWidth;
+if (document.documentElement.clientHeight > length) {
+  length = document.documentElement.clientHeight;
+}
+var collisionDetectionLength = length / 6;
 
 var x = 0, y = 0,
     vx = 0, vy = 0,
   ax = 0, ay = 0;
 
 var bx = 0, by = 0,
-    bdx = 0, bdy = 0;
+    bdx = 3, bdy = 3;
 
 var sphere = document.getElementById("sphere");
 var bull = document.getElementById("bull");
 
+    bull.style.width = collisionDetectionLength + "px";
+    bull.style.height = collisionDetectionLength + "px";
+
+    sphere.style.width = collisionDetectionLength + "px";
+    sphere.style.height = collisionDetectionLength + "px";
+
 if (window.DeviceMotionEvent != undefined) {
   window.ondevicemotion = function(e) {
-    ax = event.accelerationIncludingGravity.x * 5;
-    ay = event.accelerationIncludingGravity.y * 5;
-    document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
-    document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
-    document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
-
-    if ( e.rotationRate ) {
-      document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
-      document.getElementById("rotationBeta").innerHTML = e.rotationRate.beta;
-      document.getElementById("rotationGamma").innerHTML = e.rotationRate.gamma;
-    }
+    ax = event.accelerationIncludingGravity.x * 2;
+    ay = event.accelerationIncludingGravity.y * 2;
   }
 
   setInterval( function() {
@@ -83,15 +76,6 @@ if (window.DeviceMotionEvent != undefined) {
     y = parseInt(y + vy / 50);
     x = parseInt(x + vx / 50);
 
-    boundingBoxCheck();
-
-    sphere.style.top = y + "px";
-    sphere.style.left = x + "px";
-
-
-
-
-
     // Move bull
     var changeXDirection = Math.random() < 0.1;
     if (changeXDirection) {
@@ -103,6 +87,11 @@ if (window.DeviceMotionEvent != undefined) {
     }
     bx = bx + bdx;
     by = by + bdy;
+
+    boundingBoxCheck();
+
+    sphere.style.top = y + "px";
+    sphere.style.left = x + "px";
 
     bull.style.top = by + "px";
     bull.style.left = bx + "px";
@@ -121,8 +110,8 @@ function boundingBoxCheck(){
   if (bx<0) { bx = 0; bdx = -bdx; }
   if (by<0) { by = 0; bdy = -bdy; }
 
-  if (x>document.documentElement.clientWidth-20) { x = document.documentElement.clientWidth-20; vx = -vx; }
-  if (y>document.documentElement.clientHeight-20) { y = document.documentElement.clientHeight-20; vy = -vy; }
+  if (x>document.documentElement.clientWidth-collisionDetectionLength) { x = document.documentElement.clientWidth-collisionDetectionLength; vx = -vx; }
+  if (y>document.documentElement.clientHeight-collisionDetectionLength) { y = document.documentElement.clientHeight-collisionDetectionLength; vy = -vy; }
 }
 
 </script>
