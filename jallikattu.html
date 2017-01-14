@@ -5,15 +5,23 @@
 <meta name="viewport" content="width=device-width,user-scalable=yes" />
 <style>
 body {
-	font-family: helvetica, arial, sans serif;
+  font-family: helvetica, arial, sans serif;
+}
+#bull {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  -webkit-radius: 50px;
+  background-color: blue;
 }
 #sphere {
-	position: absolute;	
-	width: 50px;
-	height: 50px;
-	border-radius: 50px;
-	-webkit-radius: 50px;
-	background-color: blue;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  -webkit-radius: 50px;
+  background-color: blue;
 }
 </style>
 </head>
@@ -23,12 +31,12 @@ body {
     <h1>Accelerometer Javascript Test</h1>
     <div id="sphere"></div>
 <ul>
-	<li>acceleration x: <span id="accelerationX"></span>g</li>
-	<li>acceleration y: <span id="accelerationY"></span>g</li>
-	<li>acceleration z: <span id="accelerationZ"></span>g</li>
-	<li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
-	<li>rotation beta: <span id="rotationBeta"></span>degree</li>
-	<li>rotation gamma: <span id="rotationGamma"></span>degree</li>
+  <li>acceleration x: <span id="accelerationX"></span>g</li>
+  <li>acceleration y: <span id="accelerationY"></span>g</li>
+  <li>acceleration z: <span id="accelerationZ"></span>g</li>
+  <li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
+  <li>rotation beta: <span id="rotationBeta"></span>degree</li>
+  <li>rotation gamma: <span id="rotationGamma"></span>degree</li>
 </ul>
 
 test: <span id="test"></span>
@@ -37,54 +45,83 @@ test: <span id="test"></span>
 
 var x = 0, y = 0,
     vx = 0, vy = 0,
-	ax = 0, ay = 0;
-	
+  ax = 0, ay = 0;
+
+var bx = 0, by = 0,
+    bdx = 0, bdy = 0;
+
 var sphere = document.getElementById("sphere");
+var bull = document.getElementById("bull");
 
 if (window.DeviceMotionEvent != undefined) {
-	window.ondevicemotion = function(e) {
-		ax = event.acceleration.x * 50;
-		ay = event.acceleration.y * 50;
-		document.getElementById("accelerationX").innerHTML = e.acceleration.x;
-		document.getElementById("accelerationY").innerHTML = e.acceleration.y;
-		document.getElementById("accelerationZ").innerHTML = e.acceleration.z;
+  window.ondevicemotion = function(e) {
+    ax = event.accelerationIncludingGravity.x * 5;
+    ay = event.accelerationIncludingGravity.y * 5;
+    document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
+    document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
+    document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
 
-		if ( e.rotationRate ) {
-			document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
-			document.getElementById("rotationBeta").innerHTML = e.rotationRate.beta;
-			document.getElementById("rotationGamma").innerHTML = e.rotationRate.gamma;
-		}		
-	}
+    if ( e.rotationRate ) {
+      document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
+      document.getElementById("rotationBeta").innerHTML = e.rotationRate.beta;
+      document.getElementById("rotationGamma").innerHTML = e.rotationRate.gamma;
+    }
+  }
 
-	setInterval( function() {
-		var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
-		if ( landscapeOrientation) {
-			vx = vx + ay;
-			vy = vy + ax;
-		} else {
-			vy = vy - ay;
-			vx = vx + ax;
-		}
-		vx = vx * 0.98;
-		vy = vy * 0.98;
-		y = parseInt(y + vy / 50);
-		x = parseInt(x + vx / 50);
-		
-		boundingBoxCheck();
-		
-		sphere.style.top = y + "px";
-		sphere.style.left = x + "px";
-		
-	}, 25);
-} 
+  setInterval( function() {
+    var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
+    if ( landscapeOrientation) {
+      vx = vx + ay;
+      vy = vy + ax;
+    } else {
+      vy = vy - ay;
+      vx = vx + ax;
+    }
+    vx = vx * 0.98;
+    vy = vy * 0.98;
+    y = parseInt(y + vy / 50);
+    x = parseInt(x + vx / 50);
+
+    boundingBoxCheck();
+
+    sphere.style.top = y + "px";
+    sphere.style.left = x + "px";
+
+
+
+
+
+    // Move bull
+    var changeXDirection = Math.random() < 0.1;
+    if (changeXDirection) {
+      bdx = bdx * -1
+    }
+    var changeYDirection = Math.random() < 0.1;
+    if (changeYDirection) {
+      bdy = bdy * -1
+    }
+    bx = bx + bdx;
+    by = by + bdy;
+
+    bull.style.top = by + "px";
+    bull.style.left = bx + "px";
+
+
+
+  }, 25);
+}
 
 
 function boundingBoxCheck(){
-	if (x<0) { x = 0; vx = -vx; }
-	if (y<0) { y = 0; vy = -vy; }
-	if (x>document.documentElement.clientWidth-20) { x = document.documentElement.clientWidth-20; vx = -vx; }
-	if (y>document.documentElement.clientHeight-20) { y = document.documentElement.clientHeight-20; vy = -vy; }
-	
+  if (x<0) { x = 0; vx = -vx; }
+  if (y<0) { y = 0; vy = -vy; }
+
+
+  if (bx<0) { bx = 0; bdx = -bdx; }
+  if (by<0) { by = 0; bdy = -bdy; }
+
+  if (x>document.documentElement.clientWidth-20) { x = document.documentElement.clientWidth-20; vx = -vx; }
+  if (y>document.documentElement.clientHeight-20) { y = document.documentElement.clientHeight-20; vy = -vy; }
 }
 
 </script>
