@@ -28,17 +28,25 @@ body {
 
 <body>
 <div id="content">
-    <h1>Jallikattu</h1>
-    <div id="sphere"></div>
     <div id="bull"></div>
+    <div id="sphere"></div>
+    <h1>ஜல்லிக்கட்டு</h1>
+    <div id="score"></div>
+    <div id="fullscreen">
+    <input type="button"  value="Click me" onclick="DoFullScreen()" />
+    </div>
 </div>
 <script type="text/javascript">
+var score=0, topscore=0;
 
 var length = document.documentElement.clientWidth;
 if (document.documentElement.clientHeight > length) {
   length = document.documentElement.clientHeight;
 }
 var collisionDetectionLength = length / 6;
+
+screen.orientation.lock( 'landscape' );
+
 
 var x = 0, y = 0,
     vx = 0, vy = 0,
@@ -49,6 +57,7 @@ var bx = 0, by = 0,
 
 var sphere = document.getElementById("sphere");
 var bull = document.getElementById("bull");
+var scoreboard = document.getElementById("score");
 
     bull.style.width = collisionDetectionLength + "px";
     bull.style.height = collisionDetectionLength + "px";
@@ -64,6 +73,7 @@ if (window.DeviceMotionEvent != undefined) {
 
   setInterval( function() {
     var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
+
     if ( landscapeOrientation) {
       vx = vx + ay;
       vy = vy + ax;
@@ -90,6 +100,8 @@ if (window.DeviceMotionEvent != undefined) {
 
     boundingBoxCheck();
 
+    updateScores();
+
     sphere.style.top = y + "px";
     sphere.style.left = x + "px";
 
@@ -102,6 +114,46 @@ if (window.DeviceMotionEvent != undefined) {
 }
 
 
+function DoFullScreen() {
+var fsb = document.getElementById("fullscreen");
+fsb.style.display = "none";
+
+
+var isInFullScreen = (document.fullScreenElement && document.fullScreenElement !==     null) ||    // alternative standard method  
+  (document.mozFullScreen || document.webkitIsFullScreen);
+
+var docElm = document.documentElement;
+if (!isInFullScreen) {
+  if (docElm.requestFullscreen) {
+    docElm.requestFullscreen();
+  }
+  else if (docElm.mozRequestFullScreen) {
+    docElm.mozRequestFullScreen();
+    alert("Mozilla entering fullscreen!");
+  }
+  else if (docElm.webkitRequestFullScreen) {
+    docElm.webkitRequestFullScreen();
+    alert("Webkit entering fullscreen!");
+  }
+}
+
+}
+
+
+
+function updateScores() {
+  var manOnBull = (x >= bx - collisionDetectionLength) && (x <= bx + collisionDetectionLength) &&  (y >= by - collisionDetectionLength) && (y <= by + collisionDetectionLength);
+  if (manOnBull) {
+    score++;
+  } else {
+    score = 0;
+  }
+  if (score > topscore) {
+    topscore = score;
+  }
+  scoreboard.innerHTML = "Now: " + score + "   Best: " + topscore ;
+}
+
 function boundingBoxCheck(){
   if (x<0) { x = 0; vx = -vx; }
   if (y<0) { y = 0; vy = -vy; }
@@ -110,8 +162,8 @@ function boundingBoxCheck(){
   if (bx<0) { bx = 0; bdx = -bdx; }
   if (by<0) { by = 0; bdy = -bdy; }
 
-  if (x>document.documentElement.clientWidth-collisionDetectionLength) { x = document.documentElement.clientWidth-collisionDetectionLength; vx = -vx; }
-  if (y>document.documentElement.clientHeight-collisionDetectionLength) { y = document.documentElement.clientHeight-collisionDetectionLength; vy = -vy; }
+  if (x>document.documentElement.clientWidth-collisionDetectionLength-5) { x = document.documentElement.clientWidth-collisionDetectionLength-5; vx = -vx; }
+  if (y>document.documentElement.clientHeight-collisionDetectionLength-5) { y = document.documentElement.clientHeight-collisionDetectionLength-5; vy = -vy; }
 }
 
 </script>
