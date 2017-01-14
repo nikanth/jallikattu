@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>Accelerometer Javascript Test</title>
+    <title>பொங்கலோ பொங்கல்</title>
     <meta name="viewport" content="width=device-width,user-scalable=yes" />
     <style>
         #fullscreen {
@@ -161,6 +161,11 @@
         }
 
         function DoFullScreen() {
+            var ua = navigator.userAgent.toLowerCase();
+            if (!ua.indexOf("android") > -1 || !ua.indexOf("chrome") > -1) {
+                alert("ஆண்ட்ராய்டு கிரோம் மட்டுமே");
+                return;
+            }
             var fsb = document.getElementById("fullscreen");
             fsb.style.display = "none";
             started = true;
@@ -196,12 +201,12 @@
                 score = 0;
             }
             var pattam = [
-                "   லிட்டில் ஸ்டார்   ",
+                " லிட்டில் ஸ்டார்   ",
                 "   ஸ்டார்               ",
-                " லிட்டில் சூப்பர் ஸ்டார்",
-                "   சூப்பர் ஸ்டார்    ",
-                "   STR        ",
-                "   சூப்பர் STR   ",
+                "லிட்டில் சூப்பர் ஸ்டார்",
+                "  சூப்பர் ஸ்டார்    ",
+                "    STR      ",
+                "  சூப்பர் STR   ",
                 "  விருமாண்டி     ",
                 "  RJ பாலாஜி     ",
                 "  Hiphop தமிழா ",
@@ -209,7 +214,7 @@
             ];
             var tscore = "    அமானுஷ்யம்";
 
-            if (score / 20 < 9) {
+            if (score / 27 < 9) {
                 tscore = pattam[Math.floor(score / 20)];
             }
 
