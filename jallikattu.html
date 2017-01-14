@@ -1,234 +1,262 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Accelerometer Javascript Test</title>
-<meta name="viewport" content="width=device-width,user-scalable=yes" />
-<style>
-#fullscreen {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  z-index: 10;
-    position: relative;
-width:100%;
-height:150px;
-align: center;
-}
 
-#bull {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 50px;
-  -webkit-radius: 50px;
-  background-image: url("https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center; 
-  background-size: contain;
-    z-index: 1;
-}
-#sphere {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 50px;
-  -webkit-radius: 50px;
-  background-color: red;
-  background-image: url("http://data1.ibtimes.co.in/cache-img-600-450/en/full/595837/1453188088_simbu.jpg");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center; 
-  background-size: cover;
-    z-index: 2;
-}
-#score {
-  align: center;
-    z-index: 3;
-      position: relative;
-text-align: center;
-  font-size: 32px;
-}
-</style>
+<head>
+    <title>Accelerometer Javascript Test</title>
+    <meta name="viewport" content="width=device-width,user-scalable=yes" />
+    <style>
+        #fullscreen {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            z-index: 10;
+            position: relative;
+            width: 100%;
+            height: 150px;
+            align: center;
+        }
+        
+        #bull {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+            -webkit-radius: 50px;
+            background-image: url("https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: contain;
+            z-index: 1;
+        }
+        
+        #sphere {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+            -webkit-radius: 50px;
+            background-color: red;
+            background-image: url("http://data1.ibtimes.co.in/cache-img-600-450/en/full/595837/1453188088_simbu.jpg");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            z-index: 2;
+        }
+        
+        #score {
+            align: center;
+            z-index: 3;
+            text-align: center;
+            font-size: 32px;
+        }
+    </style>
 </head>
 
 <body>
-<div id="content">
-    <br/><br/>
-    <h1 align="center">ஜல்லிக்கட்டு</h1><br/><br/><br/>
-    <div id="bull"></div>
-    <div id="sphere"></div>
-    <div id="fullscreen" >
-    <input type="button"  value="தொடங்கு" onclick="DoFullScreen()" style="width: 100%;height:150px;" />
+    <div id="content">
+        <br/>
+        <br/>
+        <h1 align="center">ஜல்லிக்கட்டு</h1>
+        <br/>
+        <br/>
+        <br/>
+        <div id="bull"></div>
+        <div id="sphere"></div>
+        <div id="fullscreen">
+            <input type="button" value="தொடங்கு" onclick="DoFullScreen()" style="width: 100%;height:150px;" />
+        </div>
+        <div id="score"></div>
     </div>
-    <div id="score" ></div>
-</div>
-<script type="text/javascript">
-var score=0, topscore=0;
-var ttopscore = "லிட்டில் ஸ்டார் ";
-var started = false;
+    <script type="text/javascript">
+        var score = 0,
+            topscore = 0;
+        var ttopscore = "லிட்டில் ஸ்டார் ";
+        var started = false;
 
-var length = document.documentElement.clientWidth;
-if (document.documentElement.clientHeight > length) {
-  length = document.documentElement.clientHeight;
-}
-var collisionDetectionLength = length / 6;
+        var length = document.documentElement.clientWidth;
+        if (document.documentElement.clientHeight > length) {
+            length = document.documentElement.clientHeight;
+        }
+        var collisionDetectionLength = length / 6;
 
+        var x = 20,
+            y = 20,
+            vx = 0,
+            vy = 0,
+            ax = 0,
+            ay = 0;
 
+        var bx = 1000,
+            by = 1000,
+            bdx = 3,
+            bdy = 3;
 
+        var sphere = document.getElementById("sphere");
+        var bull = document.getElementById("bull");
+        var scoreboard = document.getElementById("score");
 
-var x = 20, y = 20,
-    vx = 0, vy = 0,
-  ax = 0, ay = 0;
+        bull.style.width = collisionDetectionLength * 2 + "px";
+        bull.style.height = collisionDetectionLength * 2 + "px";
+        bull.style.display = "none";
+        sphere.style.display = "none";
 
-var bx = 1000, by = 1000,
-    bdx = 3, bdy = 3;
+        sphere.style.width = collisionDetectionLength + "px";
+        sphere.style.height = collisionDetectionLength + "px";
 
-var sphere = document.getElementById("sphere");
-var bull = document.getElementById("bull");
-var scoreboard = document.getElementById("score");
+        if (window.DeviceMotionEvent != undefined) {
+            window.ondevicemotion = function(e) {
+                ax = event.accelerationIncludingGravity.x * 2;
+                ay = event.accelerationIncludingGravity.y * 2;
+            }
 
-    bull.style.width = collisionDetectionLength*2 + "px";
-    bull.style.height = collisionDetectionLength*2 + "px";
-bull.style.display = "none";
-sphere.style.display = "none";
+            setInterval(function() {
+                if (!started) {
+                    return;
+                }
 
-    sphere.style.width = collisionDetectionLength + "px";
-    sphere.style.height = collisionDetectionLength + "px";
+                var landscapeOrientation = window.innerWidth / window.innerHeight > 1;
 
-if (window.DeviceMotionEvent != undefined) {
-  window.ondevicemotion = function(e) {
-    ax = event.accelerationIncludingGravity.x * 2;
-    ay = event.accelerationIncludingGravity.y * 2;
-  }
+                if (landscapeOrientation) {
+                    vx = vx + ay;
+                    vy = vy + ax;
+                } else {
+                    vy = vy - ay;
+                    vx = vx + ax;
+                }
+                vx = vx * 0.98;
+                vy = vy * 0.98;
+                y = parseInt(y + vy / 50);
+                x = parseInt(x + vx / 50);
 
-  setInterval( function() {
-    if (!started) {
-      return;
-    }
+                // Move bull
+                var changeXDirection = Math.random() < 0.06;
+                if (changeXDirection) {
+                    bdx = bdx * -1
+                }
+                var changeYDirection = Math.random() < 0.07;
+                if (changeYDirection) {
+                    bdy = bdy * -1
+                }
+                bx = bx + bdx;
+                by = by + bdy;
 
-    var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
+                boundingBoxCheck();
 
-    if ( landscapeOrientation) {
-      vx = vx + ay;
-      vy = vy + ax;
-    } else {
-      vy = vy - ay;
-      vx = vx + ax;
-    }
-    vx = vx * 0.98;
-    vy = vy * 0.98;
-    y = parseInt(y + vy / 50);
-    x = parseInt(x + vx / 50);
+                updateScores();
 
-    // Move bull
-    var changeXDirection = Math.random() < 0.06;
-    if (changeXDirection) {
-      bdx = bdx * -1
-    }
-    var changeYDirection = Math.random() < 0.07;
-    if (changeYDirection) {
-      bdy = bdy * -1
-    }
-    bx = bx + bdx;
-    by = by + bdy;
+                sphere.style.top = y + "px";
+                sphere.style.left = x + "px";
 
-    boundingBoxCheck();
+                bull.style.top = by - collisionDetectionLength / 2 + "px";
+                bull.style.left = bx - collisionDetectionLength / 2 + "px";
 
-    updateScores();
+            }, 25);
+        }
 
-    sphere.style.top = y + "px";
-    sphere.style.left = x + "px";
+        function DoFullScreen() {
+            var fsb = document.getElementById("fullscreen");
+            fsb.style.display = "none";
+            started = true;
+            bull.style.display = "block";
+            sphere.style.display = "block";
 
-    bull.style.top = by - collisionDetectionLength/2+ "px";
-    bull.style.left = bx - collisionDetectionLength/2 + "px";
+            var isInFullScreen = (document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method  
+                (document.mozFullScreen || document.webkitIsFullScreen);
 
+            var docElm = document.documentElement;
+            if (!isInFullScreen) {
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                } else if (docElm.mozRequestFullScreen) {
+                    docElm.mozRequestFullScreen();
+                    alert("Mozilla entering fullscreen!");
+                } else if (docElm.webkitRequestFullScreen) {
+                    docElm.webkitRequestFullScreen();
+                    alert("Webkit entering fullscreen!");
+                }
+                screen.orientation.lock("portrait-primary");
+            }
 
+        }
 
-  }, 25);
-}
+        function updateScores() {
+            var manOnBull = (x >= bx - collisionDetectionLength) && (x <= bx + collisionDetectionLength) && (y >= by - collisionDetectionLength) && (y <= by + collisionDetectionLength);
+            if (manOnBull) {
+                bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/a2292ab2/redbull.gif')";
+                score++;
+            } else {
+                bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif')";
+                score = 0;
+            }
+            var pattam = [
+                "   லிட்டில் ஸ்டார்   ",
+                "   ஸ்டார்               ",
+                " லிட்டில் சூப்பர் ஸ்டார்",
+                "   சூப்பர் ஸ்டார்    ",
+                "   STR        ",
+                "   சூப்பர் STR   ",
+                "  விருமாண்டி     ",
+                "  RJ பாலாஜி     ",
+                "  Hiphop தமிழா ",
+                "  அமானுஷ்யம் "
+            ];
+            var tscore = "    அமானுஷ்யம்";
 
+            if (score / 20 < 9) {
+                tscore = pattam[Math.floor(score / 20)];
+            }
 
-function DoFullScreen() {
-var fsb = document.getElementById("fullscreen");
-fsb.style.display = "none";
-started = true;
-bull.style.display = "block";
-sphere.style.display = "block";
+            if (score > topscore) {
+                topscore = score;
+                ttopscore = tscore;
+            }
+            scoreboard.innerHTML = "<p/>தற்போது<br/> " + tscore + "  <br/><p/><br/>உச்சம்<br/><b> " + ttopscore + "</b><br/><small>" + topscore + "</small>";
+        }
 
-var isInFullScreen = (document.fullScreenElement && document.fullScreenElement !==     null) ||    // alternative standard method  
-  (document.mozFullScreen || document.webkitIsFullScreen);
+        function boundingBoxCheck() {
+            if (x < 0) {
+                x = 0;
+                vx = -vx;
+            }
+            if (y < 0) {
+                y = 0;
+                vy = -vy;
+            }
 
-var docElm = document.documentElement;
-if (!isInFullScreen) {
-  if (docElm.requestFullscreen) {
-    docElm.requestFullscreen();
-  }
-  else if (docElm.mozRequestFullScreen) {
-    docElm.mozRequestFullScreen();
-    alert("Mozilla entering fullscreen!");
-  }
-  else if (docElm.webkitRequestFullScreen) {
-    docElm.webkitRequestFullScreen();
-    alert("Webkit entering fullscreen!");
-  }
-screen.orientation.lock("portrait-primary");
-}
+            if (bx < 0) {
+                bx = 0;
+                bdx = -bdx;
+            }
+            if (by < 0) {
+                by = 0;
+                bdy = -bdy;
+            }
 
-}
+            if (x > document.documentElement.clientWidth - collisionDetectionLength - 5) {
+                x = document.documentElement.clientWidth - collisionDetectionLength - 5;
+                vx = -vx;
+            }
+            if (y > document.documentElement.clientHeight - collisionDetectionLength - 5) {
+                y = document.documentElement.clientHeight - collisionDetectionLength - 5;
+                vy = -vy;
+            }
 
-function updateScores() {
-  var manOnBull = (x >= bx - collisionDetectionLength) && (x <= bx + collisionDetectionLength) &&  (y >= by - collisionDetectionLength) && (y <= by + collisionDetectionLength);
-  if (manOnBull) {
-    bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/a2292ab2/redbull.gif')";
-    score++;
-  } else {
-    bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif')";
-    score = 0;
-  }
-  var pattam = [
-"   லிட்டில் ஸ்டார்   ",
-"   ஸ்டார்               ",
-" லிட்டில் சூப்பர் ஸ்டார்",
-"   சூப்பர் ஸ்டார்    ",
-"   STR        ",
-"   சூப்பர் STR   ",
-"  விருமாண்டி     ",
-"  RJ பாலாஜி     ",
-"  அமானுஷ்யம் " ];
-var tscore = "    அமானுஷ்யம்";
-
-if (score / 20 < 8) {
- tscore = pattam[Math.floor(score/20)];
-}
-
-  if (score > topscore) {
-    topscore = score;
-    ttopscore = tscore;
-  }
-  scoreboard.innerHTML = "<p/>தற்போது<br/> " + tscore + "  <br/><p/><br/>உச்சம்<br/><b> " + ttopscore + "</b>" ;
-}
-
-function boundingBoxCheck(){
-  if (x<0) { x = 0; vx = -vx; }
-  if (y<0) { y = 0; vy = -vy; }
-
-
-  if (bx<0) { bx = 0; bdx = -bdx; }
-  if (by<0) { by = 0; bdy = -bdy; }
-
-  if (x>document.documentElement.clientWidth-collisionDetectionLength-5) { x = document.documentElement.clientWidth-collisionDetectionLength-5; vx = -vx; }
-  if (y>document.documentElement.clientHeight-collisionDetectionLength-5) { y = document.documentElement.clientHeight-collisionDetectionLength-5; vy = -vy; }
-
-  if (bx>document.documentElement.clientWidth-collisionDetectionLength*2-5) { bx = document.documentElement.clientWidth-collisionDetectionLength*2-5;  }
-  if (by>document.documentElement.clientHeight-collisionDetectionLength*2-5) { by = document.documentElement.clientHeight-collisionDetectionLength*2-5;  }
-}
-
-</script>
+            if (bx > document.documentElement.clientWidth - collisionDetectionLength * 2 - 5) {
+                bx = document.documentElement.clientWidth - collisionDetectionLength * 2 - 5;
+            }
+            if (by > document.documentElement.clientHeight - collisionDetectionLength * 2 - 5) {
+                by = document.documentElement.clientHeight - collisionDetectionLength * 2 - 5;
+            }
+        }
+    </script>
 
 </body>
+
 </html>
