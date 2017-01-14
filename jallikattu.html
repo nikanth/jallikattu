@@ -162,7 +162,7 @@
 
         function DoFullScreen() {
             var ua = navigator.userAgent.toLowerCase();
-            if (!ua.indexOf("android") > -1 || !ua.indexOf("chrome") > -1) {
+            if (ua.indexOf("android") == -1 || ua.indexOf("chrome") == -1) {
                 alert("ஆண்ட்ராய்டு கிரோம் மட்டுமே");
                 return;
             }
