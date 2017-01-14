@@ -14,6 +14,11 @@ body {
   border-radius: 50px;
   -webkit-radius: 50px;
   background-color: blue;
+  background-image: url("http://www.tamilnadupost.nic.in/PHIL/PIX/20000425Cattle.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  background-size: cover;
 }
 #sphere {
   position: absolute;
@@ -22,6 +27,17 @@ body {
   border-radius: 50px;
   -webkit-radius: 50px;
   background-color: red;
+  background-image: url("http://data1.ibtimes.co.in/cache-img-600-450/en/full/595837/1453188088_simbu.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  background-size: cover;
+}
+#fullscreen {
+  align: center;
+}
+#score {
+  align: center;
 }
 </style>
 </head>
@@ -30,10 +46,10 @@ body {
 <div id="content">
     <div id="bull"></div>
     <div id="sphere"></div>
-    <h1>ஜல்லிக்கட்டு</h1>
-    <div id="score"></div>
-    <div id="fullscreen">
-    <input type="button"  value="Click me" onclick="DoFullScreen()" />
+    <h1 align="center">ஜல்லிக்கட்டு</h1>
+    <div id="score" ></div>
+    <div id="fullscreen" >
+    <input type="button"  value="முழுத்திரை" onclick="DoFullScreen()" />
     </div>
 </div>
 <script type="text/javascript">
@@ -45,7 +61,6 @@ if (document.documentElement.clientHeight > length) {
 }
 var collisionDetectionLength = length / 6;
 
-screen.orientation.lock( 'landscape' );
 
 
 var x = 0, y = 0,
@@ -59,8 +74,8 @@ var sphere = document.getElementById("sphere");
 var bull = document.getElementById("bull");
 var scoreboard = document.getElementById("score");
 
-    bull.style.width = collisionDetectionLength + "px";
-    bull.style.height = collisionDetectionLength + "px";
+    bull.style.width = collisionDetectionLength*2 + "px";
+    bull.style.height = collisionDetectionLength*2 + "px";
 
     sphere.style.width = collisionDetectionLength + "px";
     sphere.style.height = collisionDetectionLength + "px";
@@ -105,8 +120,8 @@ if (window.DeviceMotionEvent != undefined) {
     sphere.style.top = y + "px";
     sphere.style.left = x + "px";
 
-    bull.style.top = by + "px";
-    bull.style.left = bx + "px";
+    bull.style.top = by - collisionDetectionLength/2+ "px";
+    bull.style.left = bx - collisionDetectionLength/2 + "px";
 
 
 
@@ -151,7 +166,7 @@ function updateScores() {
   if (score > topscore) {
     topscore = score;
   }
-  scoreboard.innerHTML = "Now: " + score + "   Best: " + topscore ;
+  scoreboard.innerHTML = "தற்போது உச்: " + score + "   உச்சம்: " + topscore ;
 }
 
 function boundingBoxCheck(){
@@ -164,6 +179,9 @@ function boundingBoxCheck(){
 
   if (x>document.documentElement.clientWidth-collisionDetectionLength-5) { x = document.documentElement.clientWidth-collisionDetectionLength-5; vx = -vx; }
   if (y>document.documentElement.clientHeight-collisionDetectionLength-5) { y = document.documentElement.clientHeight-collisionDetectionLength-5; vy = -vy; }
+
+  if (bx>document.documentElement.clientWidth-collisionDetectionLength-5) { bx = document.documentElement.clientWidth-collisionDetectionLength-5;  }
+  if (by>document.documentElement.clientHeight-collisionDetectionLength-5) { by = document.documentElement.clientHeight-collisionDetectionLength-5;  }
 }
 
 </script>
