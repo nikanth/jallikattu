@@ -4,21 +4,33 @@
 <title>Accelerometer Javascript Test</title>
 <meta name="viewport" content="width=device-width,user-scalable=yes" />
 <style>
-body {
-  font-family: helvetica, arial, sans serif;
+#fullscreen {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  z-index: 10;
+    position: relative;
+width:100%;
+height:150px;
+align: center;
 }
+
 #bull {
   position: absolute;
   width: 50px;
   height: 50px;
   border-radius: 50px;
   -webkit-radius: 50px;
-  background-color: blue;
-  background-image: url("http://www.tamilnadupost.nic.in/PHIL/PIX/20000425Cattle.jpg");
+  background-image: url("https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center; 
-  background-size: cover;
+  background-size: contain;
+    z-index: 1;
 }
 #sphere {
   position: absolute;
@@ -32,28 +44,33 @@ body {
   background-attachment: fixed;
   background-position: center; 
   background-size: cover;
-}
-#fullscreen {
-  align: center;
+    z-index: 2;
 }
 #score {
   align: center;
+    z-index: 3;
+      position: relative;
+text-align: center;
+  font-size: 32px;
 }
 </style>
 </head>
 
 <body>
 <div id="content">
+    <br/><br/>
+    <h1 align="center">ஜல்லிக்கட்டு</h1><br/><br/><br/>
     <div id="bull"></div>
     <div id="sphere"></div>
-    <h1 align="center">ஜல்லிக்கட்டு</h1>
-    <div id="score" ></div>
     <div id="fullscreen" >
-    <input type="button"  value="முழுத்திரை" onclick="DoFullScreen()" />
+    <input type="button"  value="தொடங்கு" onclick="DoFullScreen()" style="width: 100%;height:150px;" />
     </div>
+    <div id="score" ></div>
 </div>
 <script type="text/javascript">
 var score=0, topscore=0;
+var ttopscore = "லிட்டில் ஸ்டார் ";
+var started = false;
 
 var length = document.documentElement.clientWidth;
 if (document.documentElement.clientHeight > length) {
@@ -63,11 +80,12 @@ var collisionDetectionLength = length / 6;
 
 
 
-var x = 0, y = 0,
+
+var x = 20, y = 20,
     vx = 0, vy = 0,
   ax = 0, ay = 0;
 
-var bx = 0, by = 0,
+var bx = 1000, by = 1000,
     bdx = 3, bdy = 3;
 
 var sphere = document.getElementById("sphere");
@@ -76,6 +94,8 @@ var scoreboard = document.getElementById("score");
 
     bull.style.width = collisionDetectionLength*2 + "px";
     bull.style.height = collisionDetectionLength*2 + "px";
+bull.style.display = "none";
+sphere.style.display = "none";
 
     sphere.style.width = collisionDetectionLength + "px";
     sphere.style.height = collisionDetectionLength + "px";
@@ -87,6 +107,10 @@ if (window.DeviceMotionEvent != undefined) {
   }
 
   setInterval( function() {
+    if (!started) {
+      return;
+    }
+
     var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
 
     if ( landscapeOrientation) {
@@ -102,11 +126,11 @@ if (window.DeviceMotionEvent != undefined) {
     x = parseInt(x + vx / 50);
 
     // Move bull
-    var changeXDirection = Math.random() < 0.1;
+    var changeXDirection = Math.random() < 0.06;
     if (changeXDirection) {
       bdx = bdx * -1
     }
-    var changeYDirection = Math.random() < 0.1;
+    var changeYDirection = Math.random() < 0.07;
     if (changeYDirection) {
       bdy = bdy * -1
     }
@@ -132,7 +156,9 @@ if (window.DeviceMotionEvent != undefined) {
 function DoFullScreen() {
 var fsb = document.getElementById("fullscreen");
 fsb.style.display = "none";
-
+started = true;
+bull.style.display = "block";
+sphere.style.display = "block";
 
 var isInFullScreen = (document.fullScreenElement && document.fullScreenElement !==     null) ||    // alternative standard method  
   (document.mozFullScreen || document.webkitIsFullScreen);
@@ -150,23 +176,41 @@ if (!isInFullScreen) {
     docElm.webkitRequestFullScreen();
     alert("Webkit entering fullscreen!");
   }
+screen.orientation.lock("portrait-primary");
 }
 
 }
-
-
 
 function updateScores() {
   var manOnBull = (x >= bx - collisionDetectionLength) && (x <= bx + collisionDetectionLength) &&  (y >= by - collisionDetectionLength) && (y <= by + collisionDetectionLength);
   if (manOnBull) {
+    bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/a2292ab2/redbull.gif')";
     score++;
   } else {
+    bull.style.backgroundImage = "url('https://cdn.rawgit.com/nikanth/jallikattu/72588972/bull.gif')";
     score = 0;
   }
+  var pattam = [
+"   லிட்டில் ஸ்டார்   ",
+"   ஸ்டார்               ",
+" லிட்டில் சூப்பர் ஸ்டார்",
+"   சூப்பர் ஸ்டார்    ",
+"   STR        ",
+"   சூப்பர் STR   ",
+"  விருமாண்டி     ",
+"  RJ பாலாஜி     ",
+"  அமானுஷ்யம் " ];
+var tscore = "    அமானுஷ்யம்";
+
+if (score / 20 < 8) {
+ tscore = pattam[Math.floor(score/20)];
+}
+
   if (score > topscore) {
     topscore = score;
+    ttopscore = tscore;
   }
-  scoreboard.innerHTML = "தற்போது உச்: " + score + "   உச்சம்: " + topscore ;
+  scoreboard.innerHTML = "<p/>தற்போது<br/> " + tscore + "  <br/><p/><br/>உச்சம்<br/><b> " + ttopscore + "</b>" ;
 }
 
 function boundingBoxCheck(){
@@ -180,8 +224,8 @@ function boundingBoxCheck(){
   if (x>document.documentElement.clientWidth-collisionDetectionLength-5) { x = document.documentElement.clientWidth-collisionDetectionLength-5; vx = -vx; }
   if (y>document.documentElement.clientHeight-collisionDetectionLength-5) { y = document.documentElement.clientHeight-collisionDetectionLength-5; vy = -vy; }
 
-  if (bx>document.documentElement.clientWidth-collisionDetectionLength-5) { bx = document.documentElement.clientWidth-collisionDetectionLength-5;  }
-  if (by>document.documentElement.clientHeight-collisionDetectionLength-5) { by = document.documentElement.clientHeight-collisionDetectionLength-5;  }
+  if (bx>document.documentElement.clientWidth-collisionDetectionLength*2-5) { bx = document.documentElement.clientWidth-collisionDetectionLength*2-5;  }
+  if (by>document.documentElement.clientHeight-collisionDetectionLength*2-5) { by = document.documentElement.clientHeight-collisionDetectionLength*2-5;  }
 }
 
 </script>
